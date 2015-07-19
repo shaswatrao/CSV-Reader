@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<title>CSV Sheet</title>
+		<link rel="stylesheet" type="text/css" href="css/style.css" media="screen" />
+		</head>
+<body>		
+		<script src="js/three.min.js"></script>
+		<script src="js/tween.min.js"></script>
+		<script src="js/OrbitControls.js"></script>
+		<script src="js/TrackballControls.js"></script>
+		<script src="js/CSS3DRenderer.js"></script>
+
+		<div id="container"></div>
+		<div id="info"></div>
+
+<script type='text/javascript'>
+	if (window.File && window.FileReader && window.FileList && window.Blob) {
+	} else {
+		alert('The File APIs are not fully supported in this browser. \n Please switch to HTML5 compliant browser');
+	}
+	
+</script>
+
+<script>
+/**
+ * @file CSV file reader routine
+ * @author lpatil
+ */
+
+/**
+ * Reads CSV File captures entire file as one text string
+ * 
+ * @author lpatil
+ * @param {HTMLElement}
+ *            file - The csv file passed from evt.target.file captured from HTML
+ *            element "input"
+ * @param {handleCSVContent}
+ *            callback - The callback that handles the contents of the file
+ */
+function readCSV(file, callback) {
+	try {
+		if (file) {
+			if (file.type.match(/text\/csv/)
+					|| file.type.match(/vnd\.ms-excel/)) {
+				var reader = new FileReader();
+
+				reader.onload = function() {
+					// console.log(reader.result);
+					callback(reader.result);
+				}
+				reader.readAsText(file);
+
+			} else {
+				throw new TypeError('Not a csv/ms-excel file');
+			}
+		} else {
+			throw new ReferenceError("Failed to load file");
+		}
+	} catch (err) {
+		alert(err.name + ' ' + err.message);
+	}
+}//end readCSV
+
+/**
+ * same function readCSV without try-throw-catch. easier to understand for new programmers
+ 
+ function readCSV(file, callback) {
+	if (file) {
+		if (file.type.match(/text\/csv/) || file.type.match(/vnd\.ms-excel/)) {
+			var reader = new FileReader();
+
+			reader.onload = function() {
+				callback(reader.result);
+			}
+			reader.readAsText(file);
+
+		} else {
+			alert('Not a csv/ms-excel file');
+		}
+	} else {
+		alert("Failed to load file");
+	}
+} //end readCSV
+*/
+
+/**
+ * Callback used to obtain and handle the contents of the CSV file. Could be in
+ * main html file
+ * 
+ * @author lpatil
+ * @callback handleCSVConent
+ * @param {string}
+ *            csvContent - entire content of file as one string
+ */
+function handleCSVContent(csvContent) {
+	// csvContent is one long string
+	// Can use code such as following to operate on it.
+	var lines = csvContent.split("\n");
+	var result = [];
+	var headers = lines[0].split(",");
+	var table = [];
+	console.log(lines.length);
+	for(i=0;i<lines.length;i++)
+	{	
+		
+		var x= lines[i].split(",");
+		
+		table.push(x);
+		
+	}
+	console.log(table);
+	
+			var camera, scene, renderer;
+			var controls;
+
+			var objects = [];
+			var targets = { table: [], sphere: [], helix: [], grid: [] };
+
+			init();
+			animate();
+		function init() {
+
+				camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 1, 10000 );
+				camera.position.z = 3000;
+
+				scene = new THREE.Scene();
+				console.log("inside init");
+				var colMax = 250;
+				var rowMax = 250;
+				
+				for(var c=0; c< colMax; c++){
+					for(var r = 0; r < rowMax; r++){
+						var element = document.createElement( 'div' ); element.className = 'element';
+						var details = document.createElement( 'div' ); details.className = 'details';
+						element.style.backgroundColor = 'rgba(0,127,127,'+ ( Math.random() * 0.5 + 0.25 ) + ')';
+						details.style.fontSize = '0px';
+						element.style.width = 350 + 'px';
+						element.style.height = 100 + 'px';
+						element.appendChild( details );
+					
+						var object = new THREE.CSS3DObject( element );
+						object.position.x = Math.random() * 4000 - 2000;
+						object.position.y = Math.random() * 4000 - 2000;
+						object.position.z = Math.random() * 4000 - 2000;
+						
+						scene.add( object );
+						objects.push( object );
+						
+						var xPos = c + 1;
+						var yPos = r + 1;
+						
+						var object = new THREE.Object3D();
+						object.position.x = ( ( xPos )  * 360 ) - 1330;
+						object.position.y = - ( ( yPos ) * 110 ) + 990;
+						targets.table.push( object );	
+					}
+				}
+				
+				for(var j=0; j< table.length; j++)
+				{
+					for(var k=0;k<table[j].length;k++)
+					{
+					console.log("loop starts");
+
+					var element = document.createElement( 'div' );
+					element.className = 'element';
+					element.style.backgroundColor = 'rgba(0,127,127,' + ( Math.random() * 0.5 + 0.25 ) + ')';;
+					
+					var details = document.createElement( 'div' );
+					details.className = 'details';
+					details.innerHTML = table[ j ][ k ];
+					console.log(table[j][k]);
+					element.style.width = 350 + 'px';
+					element.style.height = 100 + 'px';
+					details.style.fontSize = 50 + 'px';
+					element.style.textAlign = 'center';
+					element.appendChild( details );
+					
+					var object = new THREE.CSS3DObject( element );
+					object.position.x = Math.random() * 4000 - 2000;
+					object.position.y = Math.random() * 4000 - 2000;
+					object.position.z = Math.random() * 4000 - 2000;
+					scene.add( object );
+
+					objects.push( object );
+
+					//
+					
+					var K= k + 1;
+					var J= j + 1;
+					var object = new THREE.Object3D();
+					object.position.x = ( ( K )  * 360 ) - 1330;
+					object.position.y = - ( ( J ) * 110 ) + 990;
+
+					targets.table.push( object );
+					}
+				}
+				renderer = new THREE.CSS3DRenderer();
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.domElement.style.position = 'absolute';
+				document.getElementById( 'container' ).appendChild( renderer.domElement );
+
+				//
+
+				controls = new THREE.TrackballControls( camera, renderer.domElement );
+				controls.rotateSpeed = 0.5;
+				controls.minDistance = 500;
+				controls.maxDistance = 6000;
+				controls.addEventListener( 'change', render );
+
+				transform( targets.table, 2000 );
+				window.addEventListener( 'resize', onWindowResize, false );
+			}
+			
+			
+			function transform( targets, duration ) {
+				TWEEN.removeAll();
+				for ( var i = 0; i < objects.length; i ++ ) {
+					var object = objects[ i ];
+					var target = targets[ i ];
+					new TWEEN.Tween( object.position )
+						.to( { x: target.position.x, y: target.position.y, z: target.position.z }, Math.random() * duration + duration )
+						.easing( TWEEN.Easing.Exponential.InOut )
+						.start();
+					new TWEEN.Tween( object.rotation )
+						.to( { x: target.rotation.x, y: target.rotation.y, z: target.rotation.z }, Math.random() * duration + duration )
+						.easing( TWEEN.Easing.Exponential.InOut )
+						.start();
+				}
+
+				new TWEEN.Tween( this )
+					.to( {}, duration * 2 )
+					.onUpdate( render )
+					.start();
+			}
+
+			function onWindowResize() {
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				render();
+			}
+
+			function animate() {
+				requestAnimationFrame( animate );
+				TWEEN.update();
+				controls.update();
+			}
+
+			function render() {
+				requestAnimationFrame(render);
+				document.onkeydown = move;
+				renderer.render( scene, camera );
+			}
+			function move(){
+				var keyPress = event.keyCode;
+				switch(keyPress){
+				case 37:
+					object.position.x -= 20;
+				break;
+				case 38:
+					object.position.y += 20;
+				break
+				case 39:
+					object.position.x += 20;
+				break;
+				case 40:
+					object.position.y -= 20;
+				break;
+				}
+			}
+
+	//alert('The headers are \n' + headers);
+}
+
+</script>
+
+
+	<input type="file" id="fileinput">
+	<script type="text/javascript">
+		function selectOneFileOnly(evt) {
+			readCSV(evt.target.files[0], function(csvContent) {
+				handleCSVContent(csvContent);
+			});
+		}
+		document.getElementById('fileinput').addEventListener('change',
+				selectOneFileOnly, false);
+	</script>
+
+</body>
+</html>
