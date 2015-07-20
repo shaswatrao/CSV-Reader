@@ -156,7 +156,6 @@
  * @param {handleCSVContent}
  *            callback - The callback that handles the contents of the file
  */
- console.time('readCSV');
 function readCSV(file, callback) {
 	try {
 		if (file) {
@@ -180,7 +179,6 @@ function readCSV(file, callback) {
 		alert(err.name + ' ' + err.message);
 	}
 }//end readCSV
-console.timeEnd('readCSV');
 
 /**
  * same function readCSV without try-throw-catch. easier to understand for new programmers
@@ -213,7 +211,6 @@ console.timeEnd('readCSV');
  * @param {string}
  *            csvContent - entire content of file as one string
  */
- console.time('handleCSVContent');
 function handleCSVContent(csvContent) {
 	// csvContent is one long string
 	// Can use code such as following to operate on it.
@@ -240,9 +237,6 @@ function handleCSVContent(csvContent) {
 
 			init();
 			animate();
-			
-			console.timeEnd('handleCSVContent');
-			console.time('init');
 		function init() {
 
 				camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 1, 10000 );
@@ -313,8 +307,7 @@ function handleCSVContent(csvContent) {
 				transform( targets.table, 2000 );
 				window.addEventListener( 'resize', onWindowResize, false );
 			}
-			console.timeEnd('init');
-			console.time('transform');
+			
 			
 			function transform( targets, duration ) {
 				TWEEN.removeAll();
@@ -337,7 +330,6 @@ function handleCSVContent(csvContent) {
 					.start();
 			}
 
-			console.timeEnd('transform');
 			function onWindowResize() {
 				camera.aspect = window.innerWidth / window.innerHeight;
 				camera.updateProjectionMatrix();
