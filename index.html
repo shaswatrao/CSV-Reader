@@ -41,7 +41,18 @@
 				width: 100%;
 				text-align: center;
 			}
-			
+			#searchBar {
+				position: absolute;
+				top: 63px;
+				width: 100%;
+				text-align: right;
+			}
+			#fileSelect {
+				position: absolute;
+				top: 70px;
+				width: 100%;
+				text-align: left;
+			}
 			.fileinput {
 			height:100px;
 			width: 100px;
@@ -382,11 +393,11 @@ function handleCSVContent(csvContent) {
 <br/>
 <br/>
 
-<div class="col-sm-3 col-md-3 pull-left">
+<div id="fileSelect" class="col-sm-3 col-md-3 pull-left">
 	<input type="file" id="fileinput" class="btn btn-primary">
 </div>	
 
-        <div class="col-sm-3 col-md-3 pull-right">
+        <div id="searchBar" class="col-sm-3 col-md-3 pull-right">
         <form class="navbar-form" role="search">
         <div class="input-group">
             <input type="text" class="form-control" placeholder="Search" name="srch-term" id="srch-term">
